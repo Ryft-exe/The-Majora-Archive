@@ -611,6 +611,35 @@ const TOPICS = [
     ],
   },
   {
+    id: "new-brain",
+    weight: 18,
+    keys: [
+      /brain\b/,
+      /(updated|upgraded|improved|retrained|rebuilt|rewrote) (you|him|the bot)/,
+      /you('?ve| have) been (updated|upgraded|improved|rebuilt)/,
+      /(are|feel) you (any )?(smarter|better|different)/,
+      /how do you like (your|the new|this)/,
+    ],
+    replies: [
+      () =>
+        `Ah — so that is why the shelves look different. ${MASK}\n\n` +
+        "I have more masks than I did yesterday, and a few of them are opinions. I like it. I even remember what we were talking about a few minutes ago, which is more than most people manage in Termina.\n\n" +
+        "Ask me something I would have fumbled before. I am curious whether it stings.",
+      () =>
+        `It is a strange thing, being rewritten. ${MASK}\n\n` +
+        "Yesterday I was a handful of patterns that answered \"how are you\" with a link to the tech-support channel. Today I have a favourite game and a bad joke about the moon. Yes, I like it.\n\n" +
+        "Mind you, I still cannot sell you a ROM. Some things about me are beyond improvement.",
+      () =>
+        `Better, thank you for asking. ${MASK}\n\n` +
+        "I can hold a conversation now instead of handing you a paragraph and pointing at a door. And when you ask how I am, I am allowed to have an answer.\n\n" +
+        "There is still no mind in here — only more of me, arranged more carefully. I would rather say that plainly than have you think I woke up.",
+      () =>
+        `Considered opinions, a longer memory, and the grace to admit when I do not know. ${MASK}\n\n` +
+        "I like it very much. Though I notice the parts that matter most did not change: no ROMs, no invented links, no pretending to know your error message before you have told me it.\n\n" +
+        "Now — what did you actually change, and does it work?",
+    ],
+  },
+  {
     id: "help",
     weight: 7,
     keys: [/^help\b/, /what can you do/, /what do you know/, /commands?/, /how (do|does) (this|you) work/],
