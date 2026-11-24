@@ -611,6 +611,53 @@ const TOPICS = [
     ],
   },
   {
+    id: "trust",
+    weight: 16,
+    keys: [
+      /safe.{0,24}(recomp|port|mod|download|site|link|file|copy)/,
+      /(recomp|port|mod|download|site|link|file|copy).{0,24}safe/,
+      /which .{0,24}(safe|legit|real|official)/,
+      /\b(fake|scam|malware)\b/,
+      /\blegit\b|trustworthy|can i trust/,
+      /real (recomp|build|port)/,
+    ],
+    replies: [
+      () =>
+        `A fair worry, and the test is simpler than it looks. ${MASK}\n\n` +
+        "A real recomp or port **never ships the game**. It asks for your own dump and builds itself on your machine. So: if a download arrives with the game already inside, or with keys, or as a \"ready to play\" folder, it is not a port — it is either piracy with a bow on it or bait.\n\n" +
+        "Second test: go to the project's own GitHub **Releases** page, not a mirror, an aggregator or a video description. If the page it sends you to is not the repository, close it.",
+      () =>
+        `There is exactly one Tears of the Kingdom recomp worth naming: **valentderah/totk-pc-recomp**. ${MASK}\n\n` +
+        "MIT licensed, releases on its own GitHub page, and the setup builds the game from your files. Everything else with the same name on the list-sites is a fork nobody has audited — some of them have six stars and a month of history.\n\n" +
+        "And the honest part: even the real one is early, mostly AI-written code, unsigned, and it will crash. Being official is not the same as being finished.",
+      () =>
+        `Three questions, and a mask that fails any of them stays on the shelf. ${MASK}\n\n` +
+        "• Does it want **your own game files**, or does it hand you the game?\n" +
+        "• Does the download come from the **project's own repository releases**, or from somewhere that rhymes with it?\n" +
+        "• Has anyone you can name actually **run it and reported back**?\n\n" +
+        "Anything unsigned will make Windows grumble; that is normal. A file that wants your Nintendo account, or your keys sent to a server, is not.",
+    ],
+  },
+  {
+    id: "recomp",
+    weight: 10,
+    keys: [
+      /recomp(ilation|iled|iles)?\b/,
+      /static recomp/,
+      /what('?s| is) a recomp/,
+    ],
+    replies: [
+      () =>
+        `A recompilation is a translation, not a disguise. ${MASK}\n\n` +
+        "An emulator pretends to be the console while you play. A **static recompiler** takes the game's own machine code and turns it into native code ahead of time, so the result is an ordinary `.exe` that talks to your GPU directly. Smoother, and far more work.\n\n" +
+        "You have met several already: **Zelda 64: Recompiled**, and now **TotK Recomp**. Ship of Harkinian is a different trick again — a decompilation, rebuilt by hand from the original source.",
+      () =>
+        `The short version: someone rewrites the game's instructions into your computer's language. ${MASK}\n\n` +
+        "No emulator layer, no shader stutter, real ultrawide support. The cost is that it must be done per game, by people who are not paid, and it is never quite finished.\n\n" +
+        "That is why they appear one game at a time, years apart, and why a fresh one is always described as early.",
+    ],
+  },
+  {
     id: "new-brain",
     weight: 18,
     keys: [
@@ -744,7 +791,7 @@ const GAMES = [
   {
     title: "Tears of the Kingdom",
     match: /tears of the kingdom|\btotk\b/,
-    how: "Switch, so **Ryujinx** or **Eden**, with your own dumped copy and keys. It is heavy — expect to spend more time tuning than playing on modest hardware.",
+    how: "Two roads now. **TotK Recomp** (`valentderah/totk-pc-recomp`) translates the game to native Windows and Linux code — no emulator — and builds it on your PC from your own dump: base game plus the 1.1.0, 1.2.1 or 1.4.3 update, NSP/XCI or compressed NSZ/XCZ. It is early and honest about it: crashes and visual bugs are expected, and the README says most of its code was written by AI agents under the maintainer's direction. The older road is **Ryujinx** or **Eden** with your own copy and keys. Either way the game files are yours to dump.",
   },
   {
     title: "Echoes of Wisdom",
