@@ -1,7 +1,7 @@
 <div align="center">
   <img src="public/majora-mask.png" width="112" alt="Majora's Mask" />
   <h1>Majora Archive</h1>
-  <p><strong>Every way to play <em>Majora's Mask</em>, in one archive.</strong></p>
+  <p><strong>Every Zelda game, every way to play it — in one archive.</strong></p>
   <p>A Termina-themed Windows launcher for open-source Zelda emulators and PC recomps.</p>
 </div>
 

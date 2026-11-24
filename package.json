@@ -4,7 +4,7 @@
   "version": "0.3.0",
   "private": true,
   "type": "module",
-  "description": "Majora Archive — a Termina-themed Zelda launcher for open-source recomps and emulators. Ships no game data.",
+  "description": "Majora Archive — a Termina-themed Windows launcher for every Zelda game, gathering open-source emulators and PC recomps into one archive. Ships no game data.",
   "license": "GPL-3.0-or-later",
   "author": "RYFT",
   "main": "electron/main.js",
