@@ -133,7 +133,7 @@ const TOPICS = [
         `**Download:** ${RELEASES}\n**The front door:** ${SITE}\n\n` +
         "Windows 10 or 11, x64. Grab `Majora-Archive-Setup-<version>.exe`, and check the SHA-256 printed on the release page before you run it — I would not have you wear a stranger's face.",
       () =>
-        `The current build is **v0.3.1**, and it comes from here:\n${RELEASES}\n\n` +
+        `The current build is **v0.3.2**, and it comes from here:\n${RELEASES}\n\n` +
         `${MASK} Installer is unsigned for now, so Windows will murmur about an unknown publisher — *More info → Run anyway* if you trust it. Every release prints its SHA-256; compare it.\n\n` +
         "Once you are on 0.3.1 or later, the launcher updates itself and you will not need this page again.",
     ],
@@ -836,7 +836,7 @@ const EXTRA_REPLIES = {
   smartscreen: [
     () =>
       `You want proof, not my word. Good. ${MASK}\n\n` +
-      "In PowerShell, in the folder you downloaded to:\n`Get-FileHash .\\Majora-Archive-Setup-0.3.1.exe -Algorithm SHA256`\nCompare that with the hash printed on the release page. If they match, the file is the file I built.\n\n" +
+      "In PowerShell, in the folder you downloaded to:\n`Get-FileHash .\\Majora-Archive-Setup-0.3.2.exe -Algorithm SHA256`\nCompare that with the hash printed on the release page. If they match, the file is the file I built.\n\n" +
       "The warning itself is only about the missing certificate: signing costs money every year, and this project does not charge for anything.",
   ],
   roms: [
