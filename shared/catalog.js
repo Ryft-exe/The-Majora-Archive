@@ -376,6 +376,9 @@ export const GAMES = [
     ext: ['.nsp', '.xci'],
     aliases: ['tears of the kingdom', 'totk'],
     variants: [
+      R('totk-recomp', 'totkRecomp', 'TotK Recomp · Switch recomp', {
+        note: 'Built on your own PC from your own dump by the official setup. Needs Vulkan 1.3 and about 36 GiB; early, so keep separate saves.',
+      }),
       E('ryujinx', 'ryujinx', 'Ryujinx · Switch', { note: 'Requires keys, firmware and your own copy.' }),
       E('eden', 'eden', 'Eden · Switch', { note: 'Requires keys, firmware and your own copy.' }),
     ],

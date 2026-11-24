@@ -485,6 +485,32 @@ export const MANUAL_COMPONENTS = [
     ],
   },
   {
+    key: 'totkRecomp',
+    name: 'TotK Recomp',
+    kind: 'recomp',
+    systems: 'Tears of the Kingdom · Switch recomp',
+    site: 'https://github.com/valentderah/totk-pc-recomp',
+    license: { name: 'MIT', url: 'https://github.com/valentderah/totk-pc-recomp/blob/main/LICENSE' },
+    reason:
+      'The setup compiles the game into a native executable on your PC from your own dump, so nothing is fetched or shipped here. Only the releases on this repository are official — forks and mirrors sharing the name are not. Windows 10+, a Vulkan 1.3 GPU and about 36 GiB free during setup.',
+    needs: [
+      'your own Tears of the Kingdom dump plus a 1.1.0, 1.2.1 or 1.4.3 update',
+      'a Vulkan 1.3 GPU and about 36 GiB of free space',
+    ],
+    builds: [
+      {
+        key: 'totkRecomp',
+        name: 'TotK Recomp',
+        role: 'official',
+        by: 'valentderah',
+        site: 'https://github.com/valentderah/totk-pc-recomp',
+        link: 'https://github.com/valentderah/totk-pc-recomp/releases/latest',
+        license: { name: 'MIT', url: 'https://github.com/valentderah/totk-pc-recomp/blob/main/LICENSE' },
+        note: 'Early development — crashes and visual bugs are expected. Unsigned, so SmartScreen will warn; the project ships no game files.',
+      },
+    ],
+  },
+  {
     key: 'triaevumOot',
     name: 'TriAevum: Echoes of Time',
     kind: 'recomp',

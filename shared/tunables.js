@@ -918,6 +918,12 @@ export const TUNABLES = {
     quick: [],
     note: 'Triforce Setup owns its own configuration; Majora Archive only opens the folder.',
   },
+  totkRecomp: {
+    name: 'TotK Recomp',
+    files: [],
+    quick: [],
+    note: 'TotK Recomp keeps its settings in totk.ini beside totk.exe; its in-game menu (F1) is the friendlier way in.',
+  },
   triaevumOot: {
     name: 'TriAevum: Echoes of Time',
     files: [],
