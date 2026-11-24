@@ -1,0 +1,14 @@
+{
+  "name": "majora-archive-helper",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Happy Mask Salesman — the Majora Archive Discord helper bot.",
+  "scripts": {
+    "start": "bun run index.mjs",
+    "rebrand": "bun run rebrand.mjs"
+  },
+  "dependencies": {
+    "discord.js": "14"
+  }
+}
