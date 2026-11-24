@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { ReactNode } from 'react'
+import type { FocusEvent as ReactFocusEvent, MouseEvent as ReactMouseEvent, ReactNode } from 'react'
+import { MOD_KINDS } from '../shared/mods.js'
+import type { AppUpdateState, ModActionResult, ModEntry } from './types'
 import { MusicEngine, playButtonSfx, playLaunchSfx } from './audio'
 import { getBridge, isDesktop } from './bridge'
 import type {
@@ -1145,6 +1147,11 @@ export default function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [busy, setBusy] = useState<string | null>(null)
   const [toast, setToast] = useState<{ text: string; tone: 'info' | 'error' } | null>(null)
+  const [tip, setTip] = useState<{ text: string; x: number; y: number; below: boolean } | null>(null)
+  const [modList, setModList] = useState<ModEntry[] | null>(null)
+  const [modFilter, setModFilter] = useState<string>('all')
+  const [modQuery, setModQuery] = useState('')
+  const [appUpdateLive, setAppUpdateLive] = useState<AppUpdateState | null>(null)
   const [trackName, setTrackName] = useState('Termina Lullaby')
   const [audioReady, setAudioReady] = useState(isDesktop)
   const [componentProgress, setComponentProgress] = useState<Record<string, ComponentProgress>>({})
@@ -1246,6 +1253,14 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    return bridge.onAppUpdate((status) => setAppUpdateLive(status))
+  }, [])
+
+  useEffect(() => {
+    if (state?.appUpdate && !appUpdateLive) setAppUpdateLive(state.appUpdate)
+  }, [state?.appUpdate, appUpdateLive])
+
+  useEffect(() => {
     return () => {
       if (toastTimer.current) window.clearTimeout(toastTimer.current)
     }
@@ -1270,6 +1285,12 @@ export default function App() {
     } finally {
       if (label) setBusy(null)
     }
+  }
+
+  async function modAction(action: () => Promise<ModActionResult>, label?: string) {
+    const result = (await act(action, label)) as ModActionResult | undefined
+    if (result?.mods) setModList(result.mods.entries)
+    return result
   }
 
   async function launch(action: () => Promise<ActionResult>, label?: string) {
@@ -1333,6 +1354,29 @@ export default function App() {
   }
   const openTriforce = () => act(() => bridge.openTriforce(), 'triforce')
 
+  // Hover labels for the drawer actions: shown once, above the button, on a fixed layer so
+  // the drawer's scroll container cannot clip them. "below" keeps them on screen near the top.
+  const tipHandlers = (text: string) => {
+    const place = (element: HTMLElement) => {
+      const rect = element.getBoundingClientRect()
+      const below = rect.top < 96
+      const half = 132
+      setTip({
+        text,
+        x: Math.min(Math.max(rect.left + rect.width / 2, half), window.innerWidth - half),
+        y: below ? rect.bottom + 8 : rect.top - 8,
+        below,
+      })
+    }
+    return {
+      onMouseEnter: (event: ReactMouseEvent<HTMLElement>) => place(event.currentTarget),
+      onFocus: (event: ReactFocusEvent<HTMLElement>) => place(event.currentTarget),
+      onMouseLeave: () => setTip(null),
+      onBlur: () => setTip(null),
+      onMouseDown: () => setTip(null),
+    }
+  }
+
   function musicPatch(patch: MusicPatch) {
     engine.unlock()
     setAudioReady(true)
@@ -1386,6 +1430,36 @@ export default function App() {
   const manualComponents = components.filter((component) => !component.automatic)
   const downloadedCount = downloadComponents.filter((component) => component.installed).length
   const manualFound = manualComponents.filter((component) => component.installed).length
+  const mods = modList || state?.mods?.entries || []
+  const installedMods = mods.filter((mod) => mod.installed).length
+  const appUpdate: AppUpdateState = appUpdateLive || state?.appUpdate || {
+    status: 'idle',
+    version: null,
+    percent: 0,
+    message: '',
+  }
+  const gameById = new Map(games.map((game) => [game.id, game]))
+  const modGames = games.filter((game) => mods.some((mod) => mod.game === game.id))
+  const modNeedle = modQuery.trim().toLowerCase()
+  const visibleMods = mods
+    .filter((mod) => {
+      if (modFilter === 'all') return true
+      if (modFilter === 'hacks') return mod.kind === 'romhack'
+      return mod.game === modFilter
+    })
+    .filter((mod) => {
+      if (!modNeedle) return true
+      const gameName = mod.game ? gameById.get(mod.game)?.title || '' : 'rom hack'
+      return [mod.title, mod.by, mod.summary, gameName, MOD_KINDS[mod.kind], ...(mod.tags || [])]
+        .join(' ')
+        .toLowerCase()
+        .includes(modNeedle)
+    })
+    .sort(
+      (left, right) =>
+        Number(Boolean(right.featured)) - Number(Boolean(left.featured)) ||
+        (right.likes || 0) - (left.likes || 0),
+    )
 
   const featured = games.find((game) => game.id === 'ocarina-of-time-switch-2') || games.find((game) => game.id === 'ocarina-of-time') || games[0]
   const featuredVariant = featured
@@ -1439,6 +1513,7 @@ export default function App() {
     { id: 'emulators', label: 'Emulators', icon: 'chip', badge: emulatorsFound },
     { id: 'recomps', label: 'Recomps', icon: 'spark', badge: recompsFound },
     { id: 'components', label: 'Components', icon: 'download', badge: downloadedCount || undefined },
+    { id: 'mods', label: 'Mods', icon: 'spark', badge: installedMods || undefined },
     { id: 'updates', label: 'Updates', icon: 'refresh', badge: availableUpdates || undefined },
     { id: 'settings', label: 'Settings', icon: 'gear' },
   ]
@@ -1566,6 +1641,37 @@ export default function App() {
             )}
           </div>
         </header>
+
+        {appUpdate.status !== 'idle' && appUpdate.status !== 'current' && (
+          <div className={`appbar ${appUpdate.status}`}>
+            <Icon name="download" size={15} />
+            <span>
+              <b>Launcher update</b> {appUpdate.message}
+            </span>
+            <div className="appbar-actions">
+              {appUpdate.status === 'available' && (
+                <button type="button" className="btn gold sm" data-sfx="none" onClick={() => void act(() => bridge.downloadAppUpdate())}>
+                  Download
+                </button>
+              )}
+              {appUpdate.status === 'ready' && (
+                <button type="button" className="btn gold sm" data-sfx="none" onClick={() => void act(() => bridge.installAppUpdate())}>
+                  Restart &amp; install
+                </button>
+              )}
+              {appUpdate.status === 'error' && (
+                <button
+                  type="button"
+                  className="btn ghost sm"
+                  data-sfx="none"
+                  onClick={() => setAppUpdateLive({ ...appUpdate, status: 'current', message: '' })}
+                >
+                  Dismiss
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         <div className="scroll" ref={scrollRef}>
           {view === 'library' && (
@@ -2043,6 +2149,143 @@ export default function App() {
             </div>
           )}
 
+          {view === 'mods' && (
+            <div className="view">
+              <SectionIntro
+                eyebrow="Mod library"
+                title="Mods, for every game in the archive"
+                text="A curated shelf of Majora’s Mask and Ocarina of Time mods. Install a pack into the port’s own mods folder, pause it without deleting the file, or import something you downloaded yourself. Nothing here ships game data."
+              />
+
+              <label className="mod-search">
+                <Icon name="search" size={15} />
+                <input
+                  value={modQuery}
+                  onChange={(event) => setModQuery(event.target.value)}
+                  placeholder="Search mods, authors, games…"
+                  aria-label="Search the mod library"
+                />
+                {modQuery && (
+                  <button type="button" className="mod-search-clear" onClick={() => setModQuery('')} aria-label="Clear the mod search">
+                    <Icon name="close" size={11} />
+                  </button>
+                )}
+              </label>
+
+              <div className="mod-filters">
+                <button
+                  type="button"
+                  className={`mod-filter ${modFilter === 'all' ? 'on' : ''}`}
+                  onClick={() => setModFilter('all')}
+                >
+                  Every game
+                </button>
+                {modGames.map((game) => (
+                  <button
+                    key={game.id}
+                    type="button"
+                    className={`mod-filter ${modFilter === game.id ? 'on' : ''}`}
+                    onClick={() => setModFilter(game.id)}
+                  >
+                    {game.title}
+                    <em>{mods.filter((mod) => mod.game === game.id).length}</em>
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  className={`mod-filter ${modFilter === 'hacks' ? 'on' : ''}`}
+                  onClick={() => setModFilter('hacks')}
+                >
+                  ROM hacks
+                </button>
+                <span className="mod-count">
+                  {visibleMods.length} {visibleMods.length === 1 ? 'mod' : 'mods'}
+                </span>
+              </div>
+
+              {visibleMods.length === 0 && (
+                <p className="mod-empty">Nothing in the archive matches “{modQuery}”.</p>
+              )}
+
+              <div className="mod-grid">
+                {visibleMods.map((mod) => {
+                  const meta = mod.game ? gameById.get(mod.game) : null
+                  return (
+                  <article key={mod.id} className={`mod-card ${mod.featured ? 'featured' : ''}`}>
+                    <header>
+                      <span className="chip">{MOD_KINDS[mod.kind]}</span>
+                      {typeof mod.likes === 'number' && mod.likes > 0 && <span className="mod-likes">★ {mod.likes}</span>}
+                      {mod.installed && <span className="mod-flag on">Installed</span>}
+                      {mod.paused && <span className="mod-flag">Paused</span>}
+                      {!mod.installed && !mod.paused && mod.gameReady && (
+                        <span className="mod-flag">Ready for {mod.build}</span>
+                      )}
+                    </header>
+                    <p className="mod-game">
+                      {meta ? meta.title : 'Original hardware & emulators'}
+                      <span>
+                        {meta ? ` · ${meta.platform}` : ''}
+                        {mod.build ? ` · ${mod.build}` : ''}
+                      </span>
+                    </p>
+                    <h3>{mod.title}</h3>
+                    <p className="mod-by">by {mod.by}</p>
+                    <p className="mod-summary">{mod.summary}</p>
+                    {mod.tags.length > 0 && (
+                      <div className="mod-tags">
+                        {mod.tags.map((tag) => (
+                          <span key={tag}>{tag}</span>
+                        ))}
+                      </div>
+                    )}
+                    {mod.note && <p className="hint">{mod.note}</p>}
+                    <div className="mod-actions">
+                      {mod.canInstall && !mod.installed && (
+                        <button
+                          type="button"
+                          className="btn gold sm"
+                          disabled={busy === `mod:${mod.id}`}
+                          onClick={() => void modAction(() => bridge.installMod(mod.id), `mod:${mod.id}`)}
+                        >
+                          {busy === `mod:${mod.id}` ? 'Installing…' : 'Install'}
+                        </button>
+                      )}
+                      {mod.target && (
+                        <button type="button" className="btn ghost sm" onClick={() => void modAction(() => bridge.importMod(mod.id))}>
+                          Import file…
+                        </button>
+                      )}
+                      {(mod.installed || mod.paused) && (
+                        <button type="button" className="btn ghost sm" onClick={() => void modAction(() => bridge.toggleMod(mod.id))}>
+                          {mod.paused ? 'Enable' : 'Disable'}
+                        </button>
+                      )}
+                      {(mod.installed || mod.paused) && (
+                        <button type="button" className="btn ghost sm" onClick={() => void modAction(() => bridge.removeMod(mod.id))}>
+                          Remove
+                        </button>
+                      )}
+                      <button type="button" className="btn ghost sm" onClick={() => openLink(mod.url)}>
+                        Open page
+                      </button>
+                      {mod.folder && (
+                        <IconButton label="Open this game’s mods folder" onClick={() => void act(() => bridge.openModFolder(mod.id))}>
+                          <Icon name="folder" size={14} />
+                        </IconButton>
+                      )}
+                    </div>
+                  </article>
+                  )
+                })}
+              </div>
+
+              <p className="legal">
+                Mods belong to their authors and keep their own licences. Majora Archive only moves pack files into the folder
+                the port already reads; it never bundles mod content or game data.
+              </p>
+            </div>
+          )}
+
           {view === 'settings' && (
             <div className="view">
               <SectionIntro
@@ -2374,27 +2617,33 @@ export default function App() {
                           <Icon name="play" size={13} /> {working ? 'Starting…' : 'Play'}
                         </button>
                       ) : (
-                        <button type="button" className="btn gold sm" onClick={() => void setup(selected, variant)} disabled={busy !== null}>
+                        <button
+                          type="button"
+                          className="btn gold sm"
+                          onClick={() => void setup(selected, variant)}
+                          disabled={busy !== null}
+                          {...tipHandlers('Installs the build and links the game copy you own.')}
+                        >
                           Set up
                         </button>
                       )}
                       {variant.kind === 'emulator' && (
-                        <button type="button" className="btn ghost sm" onClick={() => pickRom(selected.id)}>
+                        <button type="button" className="btn ghost sm" onClick={() => pickRom(selected.id)} {...tipHandlers('Choose the ROM or disc image you already own. It is read locally, never uploaded.')}>
                           Game file…
                         </button>
                       )}
                       {variant.kind === 'recomp' && (
-                        <button type="button" className="btn ghost sm" onClick={() => pickApp(variant.app)}>
+                        <button type="button" className="btn ghost sm" onClick={() => pickApp(variant.app)} {...tipHandlers('Already have this installed? Point the launcher at the app .exe.')}>
                           Locate app…
                         </button>
                       )}
                       {variant.kind === 'recomp' && variant.app === 'triforce' && (
-                        <button type="button" className="btn ghost sm" onClick={openTriforce}>
+                        <button type="button" className="btn ghost sm" onClick={openTriforce} {...tipHandlers('Opens Triforce Setup, which builds the game from your own copy.')}>
                           Triforce Setup
                         </button>
                       )}
                       {app?.site && (
-                        <button type="button" className="btn ghost sm" onClick={() => openLink(app.site)}>
+                        <button type="button" className="btn ghost sm" onClick={() => openLink(app.site)} {...tipHandlers('Opens this project\u2019s official download page in your browser.')}>
                           {variant.ready ? 'Project page' : 'Get it'}
                         </button>
                       )}
@@ -2419,7 +2668,7 @@ export default function App() {
                     <span>{selected.disc ? 'Disc image' : 'Game file'}</span>
                     <code>{selected.detectedRom || 'Not found — choose the file you own.'}</code>
                   </div>
-                  <button type="button" className="btn ghost sm" onClick={() => pickRom(selected.id)}>
+                  <button type="button" className="btn ghost sm" onClick={() => pickRom(selected.id)} {...tipHandlers('Pick the game copy you own. It stays on this device.')}>
                     Choose…
                   </button>
                 </div>
@@ -2439,6 +2688,16 @@ export default function App() {
             </div>
           </aside>
         </>
+      )}
+
+      {tip && (
+        <div
+          className={`tip ${tip.below ? 'below' : ''}`}
+          style={{ left: tip.x, top: tip.y }}
+          role="tooltip"
+        >
+          {tip.text}
+        </div>
       )}
 
       {toast && <div className={`toast ${toast.tone}`}>{toast.text}</div>}

@@ -1,7 +1,7 @@
 {
   "name": "majora-archive",
   "productName": "Majora Archive",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "private": true,
   "type": "module",
   "description": "Majora Archive — a Termina-themed Windows launcher for every Zelda game, gathering open-source emulators and PC recomps into one archive. Ships no game data.",
@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "7zip-bin": "^5.2.0",
+    "electron-updater": "^6.8.11",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
@@ -57,6 +58,14 @@
     ],
     "npmRebuild": false,
     "artifactName": "Majora-Archive-Setup-${version}.${ext}",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Ryft-exe",
+        "repo": "The-Majora-Archive",
+        "releaseType": "release"
+      }
+    ],
     "win": {
       "icon": "build/icon.ico",
       "target": [

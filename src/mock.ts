@@ -3,7 +3,8 @@ import { GAMES } from '../shared/catalog.js'
 import { COMPONENTS, MANUAL_COMPONENTS } from '../shared/components.js'
 import { COVER_SOURCES } from '../shared/covers.js'
 import { enrichState } from '../shared/enrich.js'
-import type { AppConfig, Bridge, ComponentInfo, LauncherState, MusicSource, UpdateEntry } from './types'
+import { MODS } from '../shared/mods.js'
+import type { AppConfig, Bridge, ComponentInfo, LauncherState, ModEntry, MusicSource, UpdateEntry } from './types'
 
 const fakeApps: Record<string, any> = {}
 
@@ -65,6 +66,19 @@ const state = (enrichState as (input: any) => unknown)({
   },
   logoUrl: (id: string) => (id === 'ocarina-of-time-switch-2' ? '/covers/triforce-logo.png' : null),
 }) as LauncherState
+
+const mockModEntries = (MODS as ModEntry[]).map((mod) => ({
+  ...mod,
+  build: null,
+  folder: null,
+  gameReady: false,
+  installed: mod.id === 'mm-graphics-overhaul',
+  paused: false,
+  canInstall: false,
+}))
+
+state.mods = { entries: mockModEntries }
+state.appUpdate = { status: 'current', version: null, percent: 0, message: '' }
 
 const now = new Date().toISOString()
 
@@ -419,6 +433,18 @@ export const mockBridge: Bridge = {
     return { ok: true, state: clone() }
   },
   openUpdateFolder: async () => ({ ok: false, message: 'Preview only.' }),
+
+  modsState: async () => ({ entries: mockModEntries }),
+  installMod: async () => ({ ok: false, message: 'Preview only — install mods in the desktop app.' }),
+  importMod: async () => ({ ok: false, message: 'Preview only — import mods in the desktop app.' }),
+  toggleMod: async () => ({ ok: false, message: 'Preview only — mod toggles work in the desktop app.' }),
+  removeMod: async () => ({ ok: false, message: 'Preview only.' }),
+  openModFolder: async () => ({ ok: false, message: 'Preview only.' }),
+
+  checkAppUpdate: async () => ({ ok: true, message: 'Preview: launcher updates check in the installed build.' }),
+  downloadAppUpdate: async () => ({ ok: false, message: 'Preview only.' }),
+  installAppUpdate: async () => ({ ok: false, message: 'Preview only.' }),
+  onAppUpdate: () => () => {},
 
   onCoversUpdated: () => () => {},
   onUpdatesUpdated: () => () => {},

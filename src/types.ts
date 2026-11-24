@@ -1,4 +1,4 @@
-export type View = 'library' | 'emulators' | 'recomps' | 'components' | 'updates' | 'settings'
+export type View = 'library' | 'emulators' | 'recomps' | 'components' | 'mods' | 'updates' | 'settings'
 
 export type Variant = {
   id: string
@@ -257,6 +257,8 @@ export type LauncherState = {
   music: MusicState
   covers: CoverState
   components: ComponentState
+  mods: ModState
+  appUpdate: AppUpdateState
   updates: UpdateEntry[]
   updatesChecking: boolean
   updatesAuto: boolean
@@ -275,6 +277,54 @@ export type ActionResult = {
   message?: string
   state?: LauncherState
 }
+
+export type ModKind =
+  | 'build'
+  | 'overhaul'
+  | 'texture'
+  | 'model'
+  | 'text'
+  | 'patch'
+  | 'controls'
+  | 'translation'
+  | 'romhack'
+  | 'library'
+
+export type ModEntry = {
+  id: string
+  title: string
+  by: string
+  game: string | null
+  target: string | null
+  kind: ModKind
+  featured?: boolean
+  summary: string
+  url: string
+  note?: string
+  likes?: number
+  tags: string[]
+  build: string | null
+  folder: string | null
+  gameReady: boolean
+  installed: boolean
+  paused: boolean
+  canInstall: boolean
+}
+
+export type ModState = {
+  entries: ModEntry[]
+}
+
+export type AppUpdateStatus = 'idle' | 'checking' | 'current' | 'available' | 'downloading' | 'ready' | 'error'
+
+export type AppUpdateState = {
+  status: AppUpdateStatus
+  version: string | null
+  percent: number
+  message: string
+}
+
+export type ModActionResult = ActionResult & { mods?: ModState }
 
 export type Bridge = {
   getState: () => Promise<LauncherState>
@@ -315,6 +365,18 @@ export type Bridge = {
   downloadUpdate: (key: string) => Promise<ActionResult>
   setUpdateAuto: (auto: boolean) => Promise<ActionResult>
   openUpdateFolder: () => Promise<ActionResult>
+
+  modsState: () => Promise<ModState>
+  installMod: (id: string) => Promise<ModActionResult>
+  importMod: (id: string) => Promise<ModActionResult>
+  toggleMod: (id: string) => Promise<ModActionResult>
+  removeMod: (id: string) => Promise<ModActionResult>
+  openModFolder: (id: string) => Promise<ActionResult>
+
+  checkAppUpdate: () => Promise<ActionResult>
+  downloadAppUpdate: () => Promise<ActionResult>
+  installAppUpdate: () => Promise<ActionResult>
+  onAppUpdate: (callback: (status: AppUpdateState) => void) => () => void
 
   onCoversUpdated: (callback: () => void) => () => void
   onUpdatesUpdated: (callback: () => void) => () => void

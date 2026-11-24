@@ -256,6 +256,21 @@ export const COMPONENTS = [
         exe: ['2ship.exe'],
         note: 'Unofficial fork that adds the European PAL 1.1 ROM, with English, French, German and Spanish.',
       },
+      {
+        key: '2ship-graphics-overhaul',
+        name: 'Graphics Overhaul',
+        role: 'fork',
+        by: 'whitesun046',
+        repo: 'whitesun046/2ship2harkinian-Graphics-Overhaul-Project',
+        site: 'https://github.com/whitesun046/2ship2harkinian-Graphics-Overhaul-Project',
+        license: {
+          name: 'CC0-1.0',
+          url: 'https://github.com/whitesun046/2ship2harkinian-Graphics-Overhaul-Project/blob/develop/LICENSE',
+        },
+        asset: { prefer: /windows/i, avoid: /linux|mac|appimage|arm|android|source/i },
+        exe: ['2ship.exe'],
+        note: 'Community fork by whitesun046 with overhauled lighting, dynamic shadows, better water and reflections. Preserves the original art style; still needs your own ROM.',
+      },
     ],
   }),
   component({

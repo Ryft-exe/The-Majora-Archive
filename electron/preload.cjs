@@ -55,4 +55,20 @@ contextBridge.exposeInMainWorld('majora', {
     ipcRenderer.on('components:progress', listener)
     return () => ipcRenderer.removeListener('components:progress', listener)
   },
+
+  modsState: () => ipcRenderer.invoke('mods:state'),
+  installMod: (id) => ipcRenderer.invoke('mods:install', { id }),
+  importMod: (id) => ipcRenderer.invoke('mods:import', { id }),
+  toggleMod: (id) => ipcRenderer.invoke('mods:toggle', { id }),
+  removeMod: (id) => ipcRenderer.invoke('mods:remove', { id }),
+  openModFolder: (id) => ipcRenderer.invoke('mods:openFolder', { id }),
+
+  checkAppUpdate: () => ipcRenderer.invoke('appUpdate:check'),
+  downloadAppUpdate: () => ipcRenderer.invoke('appUpdate:download'),
+  installAppUpdate: () => ipcRenderer.invoke('appUpdate:install'),
+  onAppUpdate: (callback) => {
+    const listener = (_event, status) => callback(status)
+    ipcRenderer.on('appUpdate:changed', listener)
+    return () => ipcRenderer.removeListener('appUpdate:changed', listener)
+  },
 })

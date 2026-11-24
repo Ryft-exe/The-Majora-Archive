@@ -2,6 +2,7 @@ import { app, BrowserWindow, dialog, ipcMain, Menu, net, protocol, shell } from 
 import { spawn } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
+import { createRequire } from 'node:module'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { APP_DEFS } from '../shared/apps.js'
 import { GAME_BY_ID, GAMES } from '../shared/catalog.js'
@@ -13,6 +14,19 @@ import { coverFile, coverStats as countCovers, fetchAllCovers, importTriforceLog
 import { defaultRomFolders, detectApps, effectiveRomFolders, scanRoms } from './detect.js'
 import { loadConfig, saveConfig } from './store.js'
 import { cachedUpdates, checkUpdates, downloadUpdate } from './updates.js'
+import { importMod, installMod, modFolder, modState, removeMod, toggleMod } from './mods.js'
+import { MOD_BY_ID } from '../shared/mods.js'
+
+// electron-updater is CommonJS, and the main process is ESM, so resolve it the way
+// Node intends rather than relying on default-import interop. A missing or broken
+// copy must never stop the launcher from opening.
+let autoUpdater = null
+try {
+  const require = createRequire(import.meta.url)
+  autoUpdater = require('electron-updater').autoUpdater || null
+} catch (error) {
+  console.error('updater unavailable:', error)
+}
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const APP_NAME = 'Majora Archive'
@@ -49,6 +63,9 @@ let musicDir
 let toolsDir
 let mainWindow = null
 let updatesChecking = false
+// State of the launcher's own update (not the emulator feeds below): 'idle' |
+// 'checking' | 'current' | 'available' | 'downloading' | 'ready' | 'error'.
+let appUpdate = { status: 'idle', version: null, percent: 0, message: '' }
 let coverJob = null
 const componentJobs = new Set()
 
@@ -251,6 +268,8 @@ function buildState() {
     music: musicState(),
     covers: countCovers(coverDir, GAMES.map((game) => game.id)),
     components: componentState({ config, toolsDir, apps }),
+    mods: modState({ config, toolsDir }),
+    appUpdate,
     updates: cachedUpdates() || [],
     updatesChecking,
     updatesAuto: config.updates?.auto !== false,
@@ -717,6 +736,161 @@ function registerIpc() {
     await shell.openPath(toolsDir)
     return { ok: true }
   })
+
+  const modById = (id) => {
+    const mod = MOD_BY_ID[id]
+    if (!mod) throw new Error('That mod is not in the library.')
+    return mod
+  }
+
+  const modResult = (act) => {
+    try {
+      const message = act()
+      return { ok: true, message, mods: modState({ config, toolsDir }) }
+    } catch (error) {
+      return { ok: false, message: error instanceof Error ? error.message : String(error) }
+    }
+  }
+
+  ipcMain.handle('mods:state', () => modState({ config, toolsDir }))
+
+  ipcMain.handle('mods:install', async (_event, { id } = {}) => {
+    try {
+      const message = await installMod(modById(id), { config, toolsDir })
+      return { ok: true, message, mods: modState({ config, toolsDir }) }
+    } catch (error) {
+      return { ok: false, message: error instanceof Error ? error.message : String(error) }
+    }
+  })
+
+  ipcMain.handle('mods:import', async (_event, { id } = {}) => {
+    let mod
+    try {
+      mod = modById(id)
+      modFolder(mod, { config, toolsDir })
+    } catch (error) {
+      return { ok: false, message: error instanceof Error ? error.message : String(error) }
+    }
+    const picked = await dialog.showOpenDialog(mainWindow, {
+      title: `Import a pack for ${mod.title}`,
+      defaultPath: app.getPath('downloads'),
+      properties: ['openFile'],
+      filters: [{ name: 'Mod packs', extensions: ['o2r', 'otr', 'zip', '7z'] }],
+    })
+    if (picked.canceled || !picked.filePaths[0]) return { ok: false, message: null }
+    try {
+      const message = await importMod(mod, picked.filePaths[0], { config, toolsDir })
+      return { ok: true, message, mods: modState({ config, toolsDir }) }
+    } catch (error) {
+      return { ok: false, message: error instanceof Error ? error.message : String(error) }
+    }
+  })
+
+  ipcMain.handle('mods:toggle', (_event, { id } = {}) =>
+    modResult(() => toggleMod(modById(id), { config, toolsDir })),
+  )
+
+  ipcMain.handle('mods:remove', (_event, { id } = {}) =>
+    modResult(() => removeMod(modById(id), { config, toolsDir })),
+  )
+
+  ipcMain.handle('mods:openFolder', async (_event, { id } = {}) => {
+    try {
+      const folder = modFolder(modById(id), { config, toolsDir })
+      fs.mkdirSync(folder, { recursive: true })
+      await shell.openPath(folder)
+      return { ok: true }
+    } catch (error) {
+      return { ok: false, message: error instanceof Error ? error.message : String(error) }
+    }
+  })
+
+  ipcMain.handle('appUpdate:check', async () => {
+    if (!app.isPackaged || !autoUpdater) {
+      return { ok: false, message: 'Update checks only run in an installed build.' }
+    }
+    try {
+      await autoUpdater.checkForUpdates()
+      return { ok: true }
+    } catch (error) {
+      return { ok: false, message: 'Could not reach the release feed.' }
+    }
+  })
+
+  ipcMain.handle('appUpdate:download', async () => {
+    if (!autoUpdater) return { ok: false, message: 'The updater is not available in this build.' }
+    try {
+      await autoUpdater.downloadUpdate()
+      return { ok: true }
+    } catch (error) {
+      return { ok: false, message: String(error?.message || error) }
+    }
+  })
+
+  ipcMain.handle('appUpdate:install', () => {
+    if (!autoUpdater) return { ok: false, message: 'The updater is not available in this build.' }
+    setImmediate(() => autoUpdater.quitAndInstall(false, true))
+    return { ok: true }
+  })
+}
+
+function setupUpdater() {
+  if (!app.isPackaged || !autoUpdater) return
+  autoUpdater.autoDownload = false
+  autoUpdater.autoInstallOnAppQuit = true
+
+  const push = (patch) => {
+    appUpdate = { ...appUpdate, ...patch }
+    send('appUpdate:changed', appUpdate)
+  }
+
+  autoUpdater.on('checking-for-update', () =>
+    push({ status: 'checking', percent: 0, message: 'Checking for a new launcher build…' }),
+  )
+  autoUpdater.on('update-available', (info) =>
+    push({
+      status: 'available',
+      version: info?.version || null,
+      percent: 0,
+      message: `Majora Archive ${info?.version || 'update'} is available.`,
+    }),
+  )
+  autoUpdater.on('update-not-available', () =>
+    push({ status: 'current', version: null, percent: 0, message: '' }),
+  )
+  autoUpdater.on('download-progress', (progress) =>
+    push({
+      status: 'downloading',
+      percent: Math.round(progress?.percent || 0),
+      message: `Downloading ${Math.round(progress?.percent || 0)}%…`,
+    }),
+  )
+  autoUpdater.on('update-downloaded', (info) =>
+    push({
+      status: 'ready',
+      version: info?.version || null,
+      percent: 100,
+      message: 'The new build is ready. Restart to finish.',
+    }),
+  )
+  autoUpdater.on('error', (error) => {
+    const text = String(error?.message || error)
+    // A release published before the updater existed has no latest.yml, and an
+    // offline machine fails the check too. Neither is worth alarming anyone about,
+    // so the bar stays hidden and the check simply runs again next launch.
+    if (/latest\.yml|404|ENOTFOUND|EAI_AGAIN|ETIMEDOUT|ECONNRESET|net::/i.test(text)) {
+      console.warn('launcher update check:', text.split('\n')[0])
+      push({ status: 'current', version: null, percent: 0, message: '' })
+      return
+    }
+    push({
+      status: 'error',
+      percent: 0,
+      message: 'Could not check for a launcher update. It will try again next launch.',
+    })
+  })
+
+  setTimeout(() => autoUpdater.checkForUpdates().catch(() => {}), 5000)
 }
 
 function createWindow() {
@@ -835,6 +1009,7 @@ if (!app.requestSingleInstanceLock()) {
     registerProtocol()
     registerIpc()
     createWindow()
+    setupUpdater()
 
     setTimeout(() => {
       if (config.covers?.auto !== false) refreshCovers(false).catch((error) => console.error('cover fetch:', error))
