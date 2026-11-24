@@ -924,6 +924,12 @@ export const TUNABLES = {
     quick: [],
     note: 'TotK Recomp keeps its settings in totk.ini beside totk.exe; its in-game menu (F1) is the friendlier way in.',
   },
+  savageWind: {
+    name: 'Savage Wind',
+    files: [],
+    quick: [],
+    note: 'Savage Wind puts its settings in the game’s own Options, plus Savage Wind Configuration beside savagewind.exe. Game files, saves and settings all stay in the folder you extracted.',
+  },
   triaevumOot: {
     name: 'TriAevum: Echoes of Time',
     files: [],

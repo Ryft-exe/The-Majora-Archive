@@ -485,6 +485,32 @@ export const MANUAL_COMPONENTS = [
     ],
   },
   {
+    key: 'savageWind',
+    name: 'Savage Wind',
+    kind: 'recomp',
+    systems: 'Breath of the Wild · Switch recomp',
+    site: 'https://github.com/Revivedx/SavageWindRecomp',
+    license: { name: 'MIT', url: 'https://github.com/Revivedx/SavageWindRecomp/blob/main/LICENSE' },
+    reason:
+      'The official build recompiles the game into a native executable on your PC from your own dump, so nothing is fetched or shipped here. Only the releases on this repository are official — forks and mirrors sharing the name are not, and anything that asks for prod.keys is not this project. Windows 10+, a Vulkan 1.3 GPU, 16 GB of RAM and about 20 GB free.',
+    needs: [
+      'your own Breath of the Wild dump updated to 1.9.0 (DLC 3.0 optional)',
+      'a Vulkan 1.3 GPU, 16 GB of RAM and about 20 GB of free space',
+    ],
+    builds: [
+      {
+        key: 'savageWind',
+        name: 'Savage Wind',
+        role: 'official',
+        by: 'Revivedx',
+        site: 'https://github.com/Revivedx/SavageWindRecomp',
+        link: 'https://github.com/Revivedx/SavageWindRecomp/releases/latest',
+        license: { name: 'MIT', url: 'https://github.com/Revivedx/SavageWindRecomp/blob/main/LICENSE' },
+        note: 'Alpha — the Great Plateau runs, anything past it is unproven. Unsigned, so SmartScreen will warn; no game files are included.',
+      },
+    ],
+  },
+  {
     key: 'totkRecomp',
     name: 'TotK Recomp',
     kind: 'recomp',

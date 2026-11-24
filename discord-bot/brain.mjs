@@ -133,7 +133,7 @@ const TOPICS = [
         `**Download:** ${RELEASES}\n**The front door:** ${SITE}\n\n` +
         "Windows 10 or 11, x64. Grab `Majora-Archive-Setup-<version>.exe`, and check the SHA-256 printed on the release page before you run it — I would not have you wear a stranger's face.",
       () =>
-        `The current build is **v0.3.2**, and it comes from here:\n${RELEASES}\n\n` +
+        `The current build is **v0.3.3**, and it comes from here:\n${RELEASES}\n\n` +
         `${MASK} Installer is unsigned for now, so Windows will murmur about an unknown publisher — *More info → Run anyway* if you trust it. Every release prints its SHA-256; compare it.\n\n` +
         "Once you are on 0.3.1 or later, the launcher updates itself and you will not need this page again.",
     ],
@@ -650,7 +650,7 @@ const TOPICS = [
       () =>
         `A recompilation is a translation, not a disguise. ${MASK}\n\n` +
         "An emulator pretends to be the console while you play. A **static recompiler** takes the game's own machine code and turns it into native code ahead of time, so the result is an ordinary `.exe` that talks to your GPU directly. Smoother, and far more work.\n\n" +
-        "You have met several already: **Zelda 64: Recompiled**, and now **TotK Recomp**. Ship of Harkinian is a different trick again — a decompilation, rebuilt by hand from the original source.",
+        "You have met several already: **Zelda 64: Recompiled**, then **TotK Recomp**, and now **Savage Wind** for Breath of the Wild. Ship of Harkinian is a different trick again — a decompilation, rebuilt by hand from the original source.",
       () =>
         `The short version: someone rewrites the game's instructions into your computer's language. ${MASK}\n\n` +
         "No emulator layer, no shader stutter, real ultrawide support. The cost is that it must be done per game, by people who are not paid, and it is never quite finished.\n\n" +
@@ -786,7 +786,7 @@ const GAMES = [
   {
     title: "Breath of the Wild",
     match: /breath of the wild|\bbotw\b/,
-    how: "The Wii U version is the one to use: **Cemu**, and it is genuinely the better-behaved build. A legally dumped disc image, and Cemu's own settings page handles the rest.",
+    how: "Two roads now. **Savage Wind** (`Revivedx/SavageWindRecomp`) is the native one — a static recompilation that rebuilds the game on your PC from your own Switch copy updated to 1.9.0, no emulator and no keys, about 20 GB free, Vulkan 1.3 and 16 GB of RAM. It is an alpha: the Great Plateau plays, and nobody has proven it far past that, so keep separate saves. The settled road is the Wii U version in **Cemu**, which is still the better-behaved build, or the Switch copy in Ryujinx or Eden with your own keys."
   },
   {
     title: "Tears of the Kingdom",
@@ -830,13 +830,13 @@ const EXTRA_REPLIES = {
   download: [
     () =>
       `Windows only, and the installer is the whole thing. ${MASK}\n\n` +
-      `**v0.3.1**, from ${RELEASES}\n\n` +
+      `**v0.3.3**, from ${RELEASES}\n\n` +
       "There is no portable build to hunt for and no separate tools download — the launcher fetches components itself once it is running. If a site offers you a \"Majora Archive\" installer that is not on that releases page, it is not mine.",
   ],
   smartscreen: [
     () =>
       `You want proof, not my word. Good. ${MASK}\n\n` +
-      "In PowerShell, in the folder you downloaded to:\n`Get-FileHash .\\Majora-Archive-Setup-0.3.2.exe -Algorithm SHA256`\nCompare that with the hash printed on the release page. If they match, the file is the file I built.\n\n" +
+      "In PowerShell, in the folder you downloaded to:\n`Get-FileHash .\\Majora-Archive-Setup-0.3.3.exe -Algorithm SHA256`\nCompare that with the hash printed on the release page. If they match, the file is the file I built.\n\n" +
       "The warning itself is only about the missing certificate: signing costs money every year, and this project does not charge for anything.",
   ],
   roms: [

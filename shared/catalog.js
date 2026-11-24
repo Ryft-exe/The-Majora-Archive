@@ -349,10 +349,14 @@ export const GAMES = [
     platformKey: 'wiiu',
     art: 'forest',
     disc: true,
-    blurb: 'The open-air reinvention. Cemu runs the Wii U release; the Switch version needs Ryujinx or Eden plus your own keys.',
+    blurb:
+      'The open-air reinvention. Savage Wind is the native route on the Switch 1.9.0 release; Cemu runs the Wii U version, and Ryujinx or Eden still need your own keys.',
     ext: ['.wud', '.wux', '.rpx', '.nsp', '.xci'],
     aliases: ['breath of the wild', 'botw'],
     variants: [
+      R('savage-wind', 'savageWind', 'Savage Wind · Switch recomp', {
+        note: 'Recompiled on your own PC from your own 1.9.0 dump by the official build. Needs Vulkan 1.3 and about 20 GB; an alpha, so keep separate saves.',
+      }),
       E('cemu', 'cemu', 'Cemu · Wii U', { ext: ['.wud', '.wux', '.rpx'] }),
       E('ryujinx', 'ryujinx', 'Ryujinx · Switch', {
         ext: ['.nsp', '.xci'],
