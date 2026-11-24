@@ -1,0 +1,25 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+release/
+.upstream/
+
+# local tooling / agent workspace
+.freebuff/
+.cloud-attachments/
+
+# local settings, secrets and lab files
+.env
+.env.*
+!.env.example
+*.local
+*.majora-backup
+*.majora-tmp
+.tmp-*
+
+# logs and OS cruft
+*.log
+.DS_Store
+Thumbs.db
