@@ -269,10 +269,15 @@ export const GAMES = [
     platformKey: 'gc',
     art: 'twilight',
     disc: true,
-    blurb: 'The twilight realm, Wolf Link, and the darkest art direction of the 2000s. Dolphin runs both the GameCube and Wii versions.',
+    blurb: 'The twilight realm, Wolf Link, and the darkest art direction of the 2000s. Play it natively through Dusklight, the decompilation port, or emulated in Dolphin.',
     ext: ['.iso', '.rvz', '.gcm', '.wia'],
     aliases: ['twilight princess'],
-    variants: [E('dolphin', 'dolphin', 'Dolphin · GameCube / Wii')],
+    variants: [
+      R('dusklight', 'dusklight', 'Dusklight · GameCube / Wii recomp', {
+        note: 'The first start asks for your own GameCube or Wii disc image and reads the game from it. Every retail disc works except the Korean Wii release. Windows 10+ with Direct3D 12 or Vulkan 1.1.',
+      }),
+      E('dolphin', 'dolphin', 'Dolphin · GameCube / Wii'),
+    ],
   },
   {
     id: 'phantom-hourglass',
@@ -443,7 +448,7 @@ export const GAMES = [
     platformKey: 'wiiu',
     art: 'twilight',
     disc: true,
-    blurb: 'The HD remaster with a new Cave of Shadows and a much faster Tears of Light collection.',
+    blurb: 'The HD remaster with a new Cave of Shadows and a much faster Tears of Light collection. No working native recompilation of this Wii U version exists for Windows yet — the native path is Dusklight on Twilight Princess, which carries the HD improvements, and Cemu runs the remaster itself.',
     ext: ['.wud', '.wux', '.rpx'],
     aliases: ['twilight princess hd', 'twilight princess'],
     variants: [E('cemu', 'cemu', 'Cemu · Wii U')],

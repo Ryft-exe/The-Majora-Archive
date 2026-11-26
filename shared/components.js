@@ -563,6 +563,32 @@ export const MANUAL_COMPONENTS = [
     ],
   },
   {
+    key: 'dusklight',
+    name: 'Dusklight',
+    kind: 'recomp',
+    systems: 'Twilight Princess · GameCube/Wii recomp',
+    site: 'https://github.com/TwilitRealm/dusklight',
+    license: { name: 'CC0-1.0', url: 'https://github.com/TwilitRealm/dusklight/blob/main/LICENSE.md' },
+    reason:
+      'It ships no game data: the first start asks for your own GameCube or Wii disc image and reads the assets from it, so nothing is fetched or shipped here. Only the releases on this repository are official. Windows 10+ with Direct3D 12 or Vulkan 1.1. The Wii U HD remaster has no working native recompilation for Windows yet — this is the port that does.',
+    needs: [
+      'your own GameCube or Wii disc image (.iso or .rvz) — every retail release except the Korean Wii disc',
+      'a Direct3D 12 or Vulkan 1.1 capable GPU',
+    ],
+    builds: [
+      {
+        key: 'dusklight',
+        name: 'Dusklight',
+        role: 'official',
+        by: 'Twilit Realm',
+        site: 'https://github.com/TwilitRealm/dusklight',
+        link: 'https://github.com/TwilitRealm/dusklight/releases/latest',
+        license: { name: 'CC0-1.0', url: 'https://github.com/TwilitRealm/dusklight/blob/main/LICENSE.md' },
+        note: 'Unzip the win32-x86_64 build and run dusklight.exe — nothing to install. Native resolution and frame rate, texture packs, mods and a randomizer. Unsigned, so SmartScreen will warn.',
+      },
+    ],
+  },
+  {
     key: 'triaevumOot',
     name: 'TriAevum: Echoes of Time',
     kind: 'recomp',

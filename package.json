@@ -1,7 +1,7 @@
 {
   "name": "majora-archive",
   "productName": "Majora Archive",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "private": true,
   "type": "module",
   "description": "Majora Archive — a Termina-themed Windows launcher for every Zelda game, gathering open-source emulators and PC recomps into one archive. Ships no game data.",

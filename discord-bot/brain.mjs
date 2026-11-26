@@ -133,7 +133,7 @@ const TOPICS = [
         `**Download:** ${RELEASES}\n**The front door:** ${SITE}\n\n` +
         "Windows 10 or 11, x64. Grab `Majora-Archive-Setup-<version>.exe`, and check the SHA-256 printed on the release page before you run it — I would not have you wear a stranger's face.",
       () =>
-        `The current build is **v0.3.4**, and it comes from here:\n${RELEASES}\n\n` +
+        `The current build is **v0.3.5**, and it comes from here:\n${RELEASES}\n\n` +
         `${MASK} Installer is unsigned for now, so Windows will murmur about an unknown publisher — *More info → Run anyway* if you trust it. Every release prints its SHA-256; compare it.\n\n` +
         "Once you are on 0.3.1 or later, the launcher updates itself and you will not need this page again.",
     ],
@@ -650,7 +650,7 @@ const TOPICS = [
       () =>
         `A recompilation is a translation, not a disguise. ${MASK}\n\n` +
         "An emulator pretends to be the console while you play. A **static recompiler** takes the game's own machine code and turns it into native code ahead of time, so the result is an ordinary `.exe` that talks to your GPU directly. Smoother, and far more work.\n\n" +
-        "You have met several already: **Zelda 64: Recompiled**, then **TotK Recomp**, **Savage Wind** for Breath of the Wild, and **Wind Waker HD Recomp** for the Wii U remaster. Ship of Harkinian is a different trick again — a decompilation, rebuilt by hand from the original source.",
+        "You have met several already: **Zelda 64: Recompiled**, then **TotK Recomp**, **Savage Wind** for Breath of the Wild, **Wind Waker HD Recomp** for the Wii U remaster, and **Dusklight** for Twilight Princess. Ship of Harkinian is a different trick again — a decompilation, rebuilt by hand from the original source.",
       () =>
         `The short version: someone rewrites the game's instructions into your computer's language. ${MASK}\n\n` +
         "No emulator layer, no shader stutter, real ultrawide support. The cost is that it must be done per game, by people who are not paid, and it is never quite finished.\n\n" +
@@ -719,9 +719,14 @@ const GAMES = [
     how: "**2 Ship 2 Harkinian** is the port to use, and it is where almost every mod on the shelf lives. The N64 original runs in RetroArch if you would rather have the original timing.",
   },
   {
+    title: "Twilight Princess HD",
+    match: /twilight princess ?(hd|remaster)|\btp ?hd\b/,
+    how: "Straight answer, because you deserve one: there is **no working native recompilation of the Wii U remaster for Windows** yet — the only Twilight Princess HD recomp on the table is a macOS-only project that still stops at the title screen. What *is* finished is **Dusklight** (`TwilitRealm/dusklight`), the native port of Twilight Princess, which carries the HD improvements: high resolution, widescreen, high frame rates, HD texture packs, gyro aiming, mods and a randomizer. It takes a GameCube or Wii disc image, every retail release except the Korean Wii disc. If you want the remaster itself, that is **Cemu** still.",
+  },
+  {
     title: "Twilight Princess",
     match: /twilight princess/,
-    how: "GameCube or Wii disc, both in **Dolphin**. The GameCube version has the better camera; the Wii version has the pointing. Pick your poison and set the internal resolution to at least 2x — it holds up.",
+    how: "**Dusklight** is the port now — native, no emulator, widescreen and high frame rates, HD textures, mods and a randomizer, built from your own GameCube or Wii disc. Otherwise **Dolphin** runs both discs; the GameCube version has the better camera, the Wii version has the pointing, and 2x internal resolution holds up better than it should.",
   },
   {
     title: "The Wind Waker HD",
@@ -830,13 +835,13 @@ const EXTRA_REPLIES = {
   download: [
     () =>
       `Windows only, and the installer is the whole thing. ${MASK}\n\n` +
-      `**v0.3.4**, from ${RELEASES}\n\n` +
+      `**v0.3.5**, from ${RELEASES}\n\n` +
       "There is no portable build to hunt for and no separate tools download — the launcher fetches components itself once it is running. If a site offers you a \"Majora Archive\" installer that is not on that releases page, it is not mine.",
   ],
   smartscreen: [
     () =>
       `You want proof, not my word. Good. ${MASK}\n\n` +
-      "In PowerShell, in the folder you downloaded to:\n`Get-FileHash .\\Majora-Archive-Setup-0.3.4.exe -Algorithm SHA256`\nCompare that with the hash printed on the release page. If they match, the file is the file I built.\n\n" +
+      "In PowerShell, in the folder you downloaded to:\n`Get-FileHash .\\Majora-Archive-Setup-0.3.5.exe -Algorithm SHA256`\nCompare that with the hash printed on the release page. If they match, the file is the file I built.\n\n" +
       "The warning itself is only about the missing certificate: signing costs money every year, and this project does not charge for anything.",
   ],
   roms: [
