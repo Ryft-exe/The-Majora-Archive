@@ -537,6 +537,32 @@ export const MANUAL_COMPONENTS = [
     ],
   },
   {
+    key: 'wwhd',
+    name: 'Wind Waker HD Recomp',
+    kind: 'recomp',
+    systems: 'The Wind Waker HD · Wii U recomp',
+    site: 'https://github.com/ZeldaWWHDRecomp/ZeldaWWHDRecomp',
+    license: { name: 'MPL-2.0', url: 'https://github.com/ZeldaWWHDRecomp/ZeldaWWHDRecomp/blob/main/LICENSE' },
+    reason:
+      'The official release is a portable folder that recompiles the game on your own PC from your own dump — it contains no game code, assets or keys, so nothing is fetched or shipped here. Windows 10 version 1903 or newer (or Windows 11), x64 or ARM64, with Vulkan.',
+    needs: [
+      'your own Wind Waker HD dump — USA or European, disc image, Cemu .wua archive or extracted folder',
+      'for a disc image: its disc key and the Wii U common key, used once to extract and never stored',
+    ],
+    builds: [
+      {
+        key: 'wwhd',
+        name: 'Wind Waker HD Recomp',
+        role: 'official',
+        by: 'ZeldaWWHDRecomp',
+        site: 'https://github.com/ZeldaWWHDRecomp/ZeldaWWHDRecomp',
+        link: 'https://github.com/ZeldaWWHDRecomp/ZeldaWWHDRecomp/releases/latest',
+        license: { name: 'MPL-2.0', url: 'https://github.com/ZeldaWWHDRecomp/ZeldaWWHDRecomp/blob/main/LICENSE' },
+        note: 'Playable from start to finish. Unsigned, so SmartScreen will warn; an update in a .wua archive is not used, because the port is built for version 0 of the game.',
+      },
+    ],
+  },
+  {
     key: 'triaevumOot',
     name: 'TriAevum: Echoes of Time',
     kind: 'recomp',

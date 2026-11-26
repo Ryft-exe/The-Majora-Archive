@@ -425,10 +425,15 @@ export const GAMES = [
     platformKey: 'wiiu',
     art: 'ocean',
     disc: true,
-    blurb: 'The HD remaster with a faster sail, a revised Triforce hunt and Miiverse bottles long since retired.',
+    blurb: 'The HD remaster with a faster sail, a revised Triforce hunt and Miiverse bottles long since retired. Playable natively through the Wind Waker HD Recomp, or emulated in Cemu.',
     ext: ['.wud', '.wux', '.rpx'],
     aliases: ['wind waker hd', 'wind waker'],
-    variants: [E('cemu', 'cemu', 'Cemu · Wii U')],
+    variants: [
+      R('wwhd', 'wwhd', 'Wind Waker HD Recomp · Wii U recomp', {
+        note: 'Rebuilt on your own PC from your own USA or European dump by the official build. A disc image needs its disc key plus the Wii U common key to extract; an extracted folder needs neither. Windows 10 1903+ and Vulkan.',
+      }),
+      E('cemu', 'cemu', 'Cemu · Wii U'),
+    ],
   },
   {
     id: 'twilight-princess-hd',

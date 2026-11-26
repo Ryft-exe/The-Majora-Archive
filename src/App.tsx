@@ -3,6 +3,7 @@ import type { FocusEvent as ReactFocusEvent, MouseEvent as ReactMouseEvent, Reac
 import { MOD_KINDS } from '../shared/mods.js'
 import type { AppUpdateState, ModActionResult, ModEntry } from './types'
 import { MusicEngine, playButtonSfx, playLaunchSfx } from './audio'
+import { setTaelCursorEnabled, taelCursorEnabled } from './TaelCursor'
 import { getBridge, isDesktop } from './bridge'
 import type {
   ActionResult,
@@ -1157,6 +1158,7 @@ export default function App() {
   const [componentProgress, setComponentProgress] = useState<Record<string, ComponentProgress>>({})
   const [buildChoice, setBuildChoice] = useState<Record<string, string>>({})
   const [configApp, setConfigApp] = useState<string | null>(null)
+  const [taelCursor, setTaelCursor] = useState(taelCursorEnabled)
 
   const searchRef = useRef<HTMLInputElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
@@ -2501,6 +2503,21 @@ export default function App() {
                     click away.
                   </p>
                   <div className="pathrow">
+                    <span className="label">Cursor</span>
+                    <label className="auto-toggle">
+                      <input
+                        type="checkbox"
+                        checked={taelCursor}
+                        onChange={(event) => {
+                          setTaelCursor(event.target.checked)
+                          setTaelCursorEnabled(event.target.checked)
+                        }}
+                      />
+                      <span className="switch" />
+                      {taelCursor ? 'Tael follows the pointer' : 'Standard pointer'}
+                    </label>
+                  </div>
+                  <div className="pathrow">
                     <span className="label">Theme</span>
                     <code>Tael violet · moonlit indigo</code>
                   </div>
@@ -2531,7 +2548,7 @@ export default function App() {
                     <li>
                       Emulators and recomps belong to their communities: RetroArch, Dolphin, Cemu, Azahar, melonDS,
                       mGBA, SameBoy, ares, Ryujinx, Eden, MAME, Ship of Harkinian, 2 Ship 2 Harkinian, Zelda 64:
-                      Recompiled and TriAevum.
+                      Recompiled, TriAevum, Savage Wind, TotK Recomp and The Wind Waker HD Recomp.
                     </li>
                     <li>
                       Box art is fetched from Libretro’s community thumbnail repositories, Zelda Wiki and Nintendo

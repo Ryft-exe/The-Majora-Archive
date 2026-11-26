@@ -1844,6 +1844,10 @@ html.tael-reduced .tael-cursor__sprite {
   color: var(--text-3);
 }
 
+.pathrow .auto-toggle {
+  flex: 1;
+}
+
 .pathrow code {
   flex: 1;
   min-width: 0;

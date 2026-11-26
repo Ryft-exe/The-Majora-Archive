@@ -1,7 +1,28 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import taelSprite from './assets/brand/tael-cursor.png'
 
 type Point = { x: number; y: number }
+
+const CURSOR_PREF = 'majora.taelCursor'
+const CURSOR_EVENT = 'majora:tael-cursor'
+
+/** Whether Tael replaces the pointer. Stored locally; missing means on. */
+export function taelCursorEnabled() {
+  try {
+    return localStorage.getItem(CURSOR_PREF) !== 'off'
+  } catch {
+    return true
+  }
+}
+
+export function setTaelCursorEnabled(enabled: boolean) {
+  try {
+    localStorage.setItem(CURSOR_PREF, enabled ? 'on' : 'off')
+  } catch {
+    // Storage can be unavailable; the switch still applies for this session.
+  }
+  window.dispatchEvent(new CustomEvent<boolean>(CURSOR_EVENT, { detail: enabled }))
+}
 
 /**
  * Tael follows the pointer with a little spring, flutters in place, and leaves
@@ -12,8 +33,16 @@ export default function TaelCursor() {
   const cursorRef = useRef<HTMLDivElement>(null)
   const trailRef = useRef<HTMLDivElement>(null)
   const imageRef = useRef<HTMLImageElement>(null)
+  const [enabled, setEnabled] = useState(taelCursorEnabled)
 
   useEffect(() => {
+    const onPreference = (event: Event) => setEnabled((event as CustomEvent<boolean>).detail !== false)
+    window.addEventListener(CURSOR_EVENT, onPreference)
+    return () => window.removeEventListener(CURSOR_EVENT, onPreference)
+  }, [])
+
+  useEffect(() => {
+    if (!enabled) return
     const root = document.documentElement
     const cursor = cursorRef.current
     const trail = trailRef.current
@@ -116,7 +145,7 @@ export default function TaelCursor() {
       root.classList.remove('tael-mode', 'tael-reduced')
       trail.replaceChildren()
     }
-  }, [])
+  }, [enabled])
 
   return (
     <>

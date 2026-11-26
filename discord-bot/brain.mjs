@@ -133,7 +133,7 @@ const TOPICS = [
         `**Download:** ${RELEASES}\n**The front door:** ${SITE}\n\n` +
         "Windows 10 or 11, x64. Grab `Majora-Archive-Setup-<version>.exe`, and check the SHA-256 printed on the release page before you run it — I would not have you wear a stranger's face.",
       () =>
-        `The current build is **v0.3.3**, and it comes from here:\n${RELEASES}\n\n` +
+        `The current build is **v0.3.4**, and it comes from here:\n${RELEASES}\n\n` +
         `${MASK} Installer is unsigned for now, so Windows will murmur about an unknown publisher — *More info → Run anyway* if you trust it. Every release prints its SHA-256; compare it.\n\n` +
         "Once you are on 0.3.1 or later, the launcher updates itself and you will not need this page again.",
     ],
@@ -263,7 +263,7 @@ const TOPICS = [
     replies: [
       () =>
         `Every instrument has its own case. ${MASK}\n\n` +
-        "**Components** downloads and updates the open-source builds themselves: Ship of Harkinian and 2 Ship 2 Harkinian for the N64 ports, Zelda 64: Recompiled, Dolphin, Cemu, melonDS, Azahar, mGBA, SameBoy, VBA-M, Ryujinx, Eden, ares, MAME and RetroArch. Triforce Setup is used exactly as installed.\n\n" +
+        "**Components** downloads and updates the open-source builds themselves: Ship of Harkinian and 2 Ship 2 Harkinian for the N64 ports, Zelda 64: Recompiled, Savage Wind, TotK Recomp, the Wind Waker HD Recomp, Dolphin, Cemu, melonDS, Azahar, mGBA, SameBoy, VBA-M, Ryujinx, Eden, ares, MAME and RetroArch. Triforce Setup is used exactly as installed.\n\n" +
         "Pick the **official release or a community fork** per component — each installs into its own folder so trying one does not break the other. Updates are checked with checksum verification where the project publishes one.",
     ],
   },
@@ -650,7 +650,7 @@ const TOPICS = [
       () =>
         `A recompilation is a translation, not a disguise. ${MASK}\n\n` +
         "An emulator pretends to be the console while you play. A **static recompiler** takes the game's own machine code and turns it into native code ahead of time, so the result is an ordinary `.exe` that talks to your GPU directly. Smoother, and far more work.\n\n" +
-        "You have met several already: **Zelda 64: Recompiled**, then **TotK Recomp**, and now **Savage Wind** for Breath of the Wild. Ship of Harkinian is a different trick again — a decompilation, rebuilt by hand from the original source.",
+        "You have met several already: **Zelda 64: Recompiled**, then **TotK Recomp**, **Savage Wind** for Breath of the Wild, and **Wind Waker HD Recomp** for the Wii U remaster. Ship of Harkinian is a different trick again — a decompilation, rebuilt by hand from the original source.",
       () =>
         `The short version: someone rewrites the game's instructions into your computer's language. ${MASK}\n\n` +
         "No emulator layer, no shader stutter, real ultrawide support. The cost is that it must be done per game, by people who are not paid, and it is never quite finished.\n\n" +
@@ -724,9 +724,9 @@ const GAMES = [
     how: "GameCube or Wii disc, both in **Dolphin**. The GameCube version has the better camera; the Wii version has the pointing. Pick your poison and set the internal resolution to at least 2x — it holds up.",
   },
   {
-    title: "The Wind Waker",
-    match: /wind ?waker/,
-    how: "**Dolphin**, GameCube disc. The HD remaster is Wii U and runs in **Cemu**, but the original's cel shading at 3x internal resolution is the version most people mean.",
+    title: "The Wind Waker HD",
+    match: /wind ?waker ?(hd|remaster)|\bww ?hd\b/,
+    how: "Two roads. The remaster has a native one now: the **Wind Waker HD Recomp** (`ZeldaWWHDRecomp/ZeldaWWHDRecomp`) translates the Wii U game to native code on your PC, no Cemu underneath — playable from start to finish, and it needs your own USA or European dump plus the keys to extract a disc image. Unsigned, so SmartScreen will mutter; that is the release, not a curse. The other door is **Cemu**. And the GameCube original still belongs to **Dolphin**, where 3x internal resolution holds up better than it has any right to.",
   },
   {
     title: "Skyward Sword",
@@ -830,13 +830,13 @@ const EXTRA_REPLIES = {
   download: [
     () =>
       `Windows only, and the installer is the whole thing. ${MASK}\n\n` +
-      `**v0.3.3**, from ${RELEASES}\n\n` +
+      `**v0.3.4**, from ${RELEASES}\n\n` +
       "There is no portable build to hunt for and no separate tools download — the launcher fetches components itself once it is running. If a site offers you a \"Majora Archive\" installer that is not on that releases page, it is not mine.",
   ],
   smartscreen: [
     () =>
       `You want proof, not my word. Good. ${MASK}\n\n` +
-      "In PowerShell, in the folder you downloaded to:\n`Get-FileHash .\\Majora-Archive-Setup-0.3.3.exe -Algorithm SHA256`\nCompare that with the hash printed on the release page. If they match, the file is the file I built.\n\n" +
+      "In PowerShell, in the folder you downloaded to:\n`Get-FileHash .\\Majora-Archive-Setup-0.3.4.exe -Algorithm SHA256`\nCompare that with the hash printed on the release page. If they match, the file is the file I built.\n\n" +
       "The warning itself is only about the missing certificate: signing costs money every year, and this project does not charge for anything.",
   ],
   roms: [
